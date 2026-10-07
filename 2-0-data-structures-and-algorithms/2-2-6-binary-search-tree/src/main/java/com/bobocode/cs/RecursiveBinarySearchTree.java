@@ -18,32 +18,148 @@ import java.util.function.Consumer;
  */
 public class RecursiveBinarySearchTree<T extends Comparable<T>> implements BinarySearchTree<T> {
 
+    Node<T> root;
+    int size = 0;
+
     public static <T extends Comparable<T>> RecursiveBinarySearchTree<T> of(T... elements) {
-        throw new ExerciseNotCompletedException();
+
+        RecursiveBinarySearchTree<T> tree = new RecursiveBinarySearchTree<T>();
+
+        if(elements.length > 0) {
+            tree.root =  new Node(elements[0]);
+            tree.size = 1;
+            for (int i = 1; i < elements.length; i++) {
+                tree.insert(elements[i]);
+            }
+        }
+
+        return tree;
     }
 
     @Override
     public boolean insert(T element) {
-        throw new ExerciseNotCompletedException();
+        if(root == null) {
+            root = new Node<>(element);
+            size = 1;
+            return true;
+        }
+        return inertHelper(element, root);
+    }
+
+    private boolean inertHelper(T element, Node<T> current) {
+        switch (Integer.signum(element.compareTo(current.value))) {
+            case -1:
+                if (current.hasLeft()) return inertHelper(element, current.left);
+                else {
+                    current.left = new Node<T>(element);
+                    size++;
+                    return true;
+                }
+            case 1:
+                if (current.hasRight()) return inertHelper(element, current.right);
+                else {
+                    current.right = new Node<T>(element);
+                    size++;
+                    return true;
+                }
+            case 0: return false;
+            default: return false;
+        }
     }
 
     @Override
     public boolean contains(T element) {
-        throw new ExerciseNotCompletedException();
+        return containsHelper(element, root);
+    }
+
+    private boolean containsHelper(T element, Node<T> current) {
+        switch (Integer.signum(element.compareTo(current.value))) {
+            case -1:
+                if (current.hasLeft()) return containsHelper(element, current.left);
+                return false;
+            case 1:
+                if (current.hasRight()) return containsHelper(element, current.right);
+                return false;
+            case 0: return true;
+            default: return false;
+        }
     }
 
     @Override
     public int size() {
-        throw new ExerciseNotCompletedException();
+        return size;
     }
 
     @Override
     public int depth() {
-        throw new ExerciseNotCompletedException();
+        return depthHelper(root);
+    }
+
+    private int depthHelper(Node<T> currentNode) {
+        if(currentNode == null) return 0;
+        int depthLeft = currentNode.hasLeft() ? depthHelper(currentNode.left) + 1 : 0;
+        int depthRight = currentNode.hasRight() ?  depthHelper(currentNode.right) + 1 : 0;
+
+        return depthLeft > depthRight ? depthLeft : depthRight;
     }
 
     @Override
     public void inOrderTraversal(Consumer<T> consumer) {
-        throw new ExerciseNotCompletedException();
+        inOrderTraversalHelper(consumer, root);
+    }
+
+    private void inOrderTraversalHelper(Consumer<T> consumer, Node<T> current) {
+        if(current.hasLeft()) inOrderTraversalHelper(consumer, current.left);
+        consumer.accept(current.value);
+        if(current.hasRight()) inOrderTraversalHelper(consumer, current.right);
+    }
+
+    static class Node<T> {
+        private T value;
+        private Node<T> left;
+        private Node<T> right;
+
+        public Node(T value) {
+            this.value = value;
+        }
+
+        public Node(T value, Node<T> left, Node<T> right) {
+            this.value = value;
+            this.left = left;
+            this.right = right;
+        }
+
+        public void addLeft(Node<T> node) {
+            this.left = node;
+        }
+
+        public void addRight(Node<T> node) {
+            this.right = node;
+        }
+
+        public T getValue() {
+            return value;
+        }
+
+        public Node<T> getLeft() {
+            return left;
+        }
+
+        public Node<T> getRight() {
+            return right;
+        }
+
+        public boolean hasLeft() {
+            return left != null;
+        }
+
+        public boolean hasRight() {
+            return right != null;
+        }
+    }
+
+    public static void main(String[] args) {
+        RecursiveBinarySearchTree<Integer> tree = RecursiveBinarySearchTree.of(10, 5, 15, 1, 20);
+        System.out.println(tree.depth());
     }
 }

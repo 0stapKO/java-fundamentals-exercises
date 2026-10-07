@@ -2,6 +2,9 @@ package com.bobocode.cs;
 
 import com.bobocode.util.ExerciseNotCompletedException;
 
+import java.util.Arrays;
+import java.util.NoSuchElementException;
+
 /**
  * {@link ArrayList} is an implementation of {@link List} interface. This resizable data structure
  * based on an array and is simplified version of {@link java.util.ArrayList}.
@@ -13,6 +16,10 @@ import com.bobocode.util.ExerciseNotCompletedException;
  */
 public class ArrayList<T> implements List<T> {
 
+    private T[] array;
+    private int size;
+    private int capacity;
+    private final int DEFAULT_CAPACITY = 5;
     /**
      * This constructor creates an instance of {@link ArrayList} with a specific capacity of an array inside.
      *
@@ -20,7 +27,10 @@ public class ArrayList<T> implements List<T> {
      * @throws IllegalArgumentException – if the specified initial capacity is negative or 0.
      */
     public ArrayList(int initCapacity) {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+        if (initCapacity <= 0) throw new IllegalArgumentException();
+
+        array = (T[]) new Object[initCapacity];
+        capacity = initCapacity;
     }
 
     /**
@@ -28,7 +38,9 @@ public class ArrayList<T> implements List<T> {
      * A default size of inner array is 5;
      */
     public ArrayList() {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+        array = (T[]) new Object[DEFAULT_CAPACITY];
+        size = 0;
+        capacity = DEFAULT_CAPACITY;
     }
 
     /**
@@ -38,7 +50,11 @@ public class ArrayList<T> implements List<T> {
      * @return new instance
      */
     public static <T> List<T> of(T... elements) {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+        ArrayList res = new ArrayList();
+        res.array = elements;
+        res.size = elements.length;
+        res.capacity = elements.length;
+        return res;
     }
 
     /**
@@ -48,7 +64,11 @@ public class ArrayList<T> implements List<T> {
      */
     @Override
     public void add(T element) {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+        if(size+1 > capacity) {
+            increaseCapacity();
+        }
+        array[size] = element;
+        size++;
     }
 
     /**
@@ -59,7 +79,24 @@ public class ArrayList<T> implements List<T> {
      */
     @Override
     public void add(int index, T element) {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+        if(size+1 > capacity) {
+            increaseCapacity();
+        }
+
+        if (index < size) {
+            for(int i = size-1; i >= index; i--) {
+                array[i+1] = array[i];
+            }
+            array[index] = element;
+            size++;
+            return;
+        }
+        else if (index == size){
+            array[size] = element;
+            size++;
+            return;
+        }
+        throw new IndexOutOfBoundsException();
     }
 
     /**
@@ -71,7 +108,8 @@ public class ArrayList<T> implements List<T> {
      */
     @Override
     public T get(int index) {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+        if (index >= size) throw new IndexOutOfBoundsException();
+        else return array[index];
     }
 
     /**
@@ -82,7 +120,8 @@ public class ArrayList<T> implements List<T> {
      */
     @Override
     public T getFirst() {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+       if (size > 0) return array[0];
+       throw new NoSuchElementException();
     }
 
     /**
@@ -93,7 +132,8 @@ public class ArrayList<T> implements List<T> {
      */
     @Override
     public T getLast() {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+        if (size > 0) return array[size-1];
+        throw new NoSuchElementException();
     }
 
     /**
@@ -105,7 +145,11 @@ public class ArrayList<T> implements List<T> {
      */
     @Override
     public void set(int index, T element) {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+        if (index < size && index >= 0) {
+            array[index] = element;
+            return;
+        }
+        throw new IndexOutOfBoundsException();
     }
 
     /**
@@ -117,7 +161,17 @@ public class ArrayList<T> implements List<T> {
      */
     @Override
     public T remove(int index) {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+        if (index < size) {
+            T result = array[index];
+            size--;
+            for(int i = index; i < size; i++) {
+                array[i] = array[i+1];
+            }
+            return result;
+        }
+        else {
+            throw new IndexOutOfBoundsException();
+        }
     }
 
     /**
@@ -128,7 +182,11 @@ public class ArrayList<T> implements List<T> {
      */
     @Override
     public boolean contains(T element) {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+        if(size ==0) return false;
+        for( T existingElement : array) {
+            if(existingElement.equals(element)) return true;
+        }
+        return false;
     }
 
     /**
@@ -138,7 +196,7 @@ public class ArrayList<T> implements List<T> {
      */
     @Override
     public boolean isEmpty() {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+        return size == 0;
     }
 
     /**
@@ -146,7 +204,7 @@ public class ArrayList<T> implements List<T> {
      */
     @Override
     public int size() {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+        return size;
     }
 
     /**
@@ -154,6 +212,16 @@ public class ArrayList<T> implements List<T> {
      */
     @Override
     public void clear() {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+        size = 0;
+        array = (T[]) new Object[capacity];
+    }
+
+    private void increaseCapacity() {
+        capacity = capacity * 2;
+        T[] newArray = (T[]) new Object[capacity];
+        for (int i = 0; i < size; i++) {
+            newArray[i] =  array[i];
+        }
+        array = newArray;
     }
 }

@@ -22,7 +22,7 @@ public class Nodes {
      * @return a new instance of {@link Node}
      */
     public static <T> Node<T> create(T element) {
-        throw new ExerciseNotCompletedException(); // todo:
+        return new Node<T>(element);
     }
 
     /**
@@ -33,7 +33,7 @@ public class Nodes {
      * @param <T>    a genetic type
      */
     public static <T> void link(Node<T> first, Node<T> second) {
-        throw new ExerciseNotCompletedException(); // todo:
+        first.addNext(second);
     }
 
     /**
@@ -46,7 +46,9 @@ public class Nodes {
      * @return a reference to a first node created based on firstElement
      */
     public static <T> Node<T> pairOf(T firstElement, T secondElement) {
-        throw new ExerciseNotCompletedException(); // todo:
+        Node<T> node = new Node<T>(firstElement);
+        node.addNext(new Node<T>(secondElement));
+        return node;
     }
 
     /**
@@ -60,7 +62,11 @@ public class Nodes {
      * @return a reference to the first node
      */
     public static <T> Node<T> closedPairOf(T firstElement, T secondElement) {
-        throw new ExerciseNotCompletedException(); // todo:
+        Node<T> firstNode = new Node<T>(firstElement);
+        Node<T> secondNode = new Node<T>(secondElement);
+        secondNode.addNext(firstNode);
+        firstNode.addNext(secondNode);
+        return firstNode;
     }
 
     /**
@@ -72,7 +78,21 @@ public class Nodes {
      * @return a reference to the first element of the chain
      */
     public static <T> Node<T> chainOf(T... elements) {
-        throw new ExerciseNotCompletedException(); // todo:
+
+        int n = elements.length;
+
+        if(n == 0) return null;
+
+        Node<T> firstNode = new Node<T>(elements[0]);
+
+        Node<T> prev = firstNode;
+        for(int i = 1; i < n; i++) {
+            Node<T> newNode = new Node<T>(elements[i]);
+            prev.addNext(newNode);
+            prev = newNode;
+        }
+
+        return  firstNode;
     }
 
     /**
@@ -85,6 +105,21 @@ public class Nodes {
      * @return a reference to the first element of the chain
      */
     public static <T> Node<T> circleOf(T... elements) {
-        throw new ExerciseNotCompletedException(); // todo:
+        int n = elements.length;
+
+        if(n == 0) return null;
+
+        Node<T> firstNode = new Node<T>(elements[0]);
+
+        Node<T> prev = firstNode;
+        for(int i = 1; i < n; i++) {
+            Node<T> newNode = new Node<T>(elements[i]);
+            prev.addNext(newNode);
+            prev = newNode;
+        }
+
+        prev.addNext(firstNode);
+
+        return  firstNode;
     }
 }
